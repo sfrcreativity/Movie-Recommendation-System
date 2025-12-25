@@ -14,6 +14,13 @@ def load_data():
 
 movies, similarity = load_data()
 
+if not os.path.exists("movies.pkl"):
+    st.error("movies.pkl not found!")
+
+
+if not os.path.exists("similarity_matrix.pkl"):
+    st.error("similarity_matrix.pkl not found!")
+
 
 load_dotenv()  # Load environment variables from .env
 #API_KEY = os.getenv("API_KEY")
@@ -34,7 +41,7 @@ def fetch_poster(movie_id):
         return None
     
 # Recommendation function
-def recommend(movie_title, top_n=10):
+def recommend(movie_title, top_n=12):
     # Find the index of the movie based on its title
     index = movies[movies["title"] == movie_title].index[0]
     
