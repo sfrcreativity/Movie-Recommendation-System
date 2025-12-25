@@ -3,12 +3,10 @@ import requests
 import joblib
 from dotenv import load_dotenv
 import os
-from sklearn.metrics.pairwise import cosine_similarity
-
 
 # Load data and models
 movies = joblib.load("movies.pkl")  # Ensure CSV has 'title' and 'id'
-vectors = joblib.load("vectors.pkl")  # Or recompute if needed
+similarity = joblib.load("similarity_matrix.pkl")  # Or recompute if needed
 
 load_dotenv()  # Load environment variables from .env
 API_KEY = os.getenv("API_KEY")
@@ -29,21 +27,21 @@ def fetch_poster(movie_id):
         return None
     
 # Recommendation function
-def recommend2(movie_title, top_n=10):
+def recommend(movie_title, top_n=10):
+    # Find the index of the movie based on its title
     index = movies[movies["title"] == movie_title].index[0]
     
-    sim_scores = cosine_similarity(
-        vectors[index],
-        vectors
-    ).flatten()
+    # Get the similarity scores for the given movie
+    distances = similarity[index]
 
+    # Sort the movies by similarity score, ignoring the input movie itself
     movie_list = sorted(
-        list(enumerate(sim_scores)),
-        key=lambda x: x[1],
-        reverse=True
-    )[1:top_n+1]
+        list(enumerate(distances)),
+        reverse=True,
+        key=lambda x: x[1]
+    )[1:top_n+1]  # Skip the first element because it's the movie itself
 
-    #return [(movies.iloc[i].title) for i, _ in movie_list]
+    # Return a list of tuples: (movie_title, movie_id as int)
     return [(fetch_poster(movies.iloc[i[0]].id), movies.iloc[i[0]].title) for i in movie_list]
 
 # Streamlit UI
@@ -55,7 +53,7 @@ selected_movie = st.selectbox(
 )
 
 if st.button("Show Recommendations"):
-    recommendations = recommend2(selected_movie)
+    recommendations = recommend(selected_movie)
 
     if recommendations:
         # Create 3 columns
