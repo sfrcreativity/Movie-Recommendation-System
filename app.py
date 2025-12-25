@@ -9,8 +9,8 @@ movies = joblib.load("movies.pkl")  # Ensure CSV has 'title' and 'id'
 similarity = joblib.load("similarity_matrix.pkl")  # Or recompute if needed
 
 load_dotenv()  # Load environment variables from .env
-API_KEY = os.getenv("API_KEY")
-#API_KEY = st.secrets["TMDB"]["API_KEY"]
+#API_KEY = os.getenv("API_KEY")
+API_KEY = st.secrets["TMDB"]["API_KEY"]
 
 # Fetch poster for a given movie_id from TMDb
 def fetch_poster(movie_id):
