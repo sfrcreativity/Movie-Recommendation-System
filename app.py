@@ -3,10 +3,17 @@ import requests
 import joblib
 from dotenv import load_dotenv
 import os
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-# Load data and models
-movies = joblib.load("movies.pkl")  # Ensure CSV has 'title' and 'id'
-similarity = joblib.load("similarity_matrix.pkl")  # Or recompute if needed
+@st.cache_resource
+def load_data():
+    movies = joblib.load("movies.pkl")
+    similarity = joblib.load("similarity_matrix.pkl")
+    return movies, similarity
+
+movies, similarity = load_data()
+
 
 load_dotenv()  # Load environment variables from .env
 #API_KEY = os.getenv("API_KEY")
